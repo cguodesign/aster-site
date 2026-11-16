@@ -1,0 +1,67 @@
+/* #space overview picture and the #features list + player (home page). */
+
+/* Both frames are standalone pictures here, so they get all four corners. */
+.overview-frame, .feat-frame { position: relative; border-radius: 20px; border-bottom: 1px solid rgba(80, 65, 115, .2); }
+.overview { margin: 0; }
+.overview-frame img { display: block; width: 100%; height: auto; }
+
+/* Hovering or focusing a label (or its region) lifts that region: the other regions dim a little
+   and the active one gets a faint outline. */
+.ov-area { position: absolute; background: rgba(24, 20, 44, 0); transition: background-color 240ms var(--ease), box-shadow 240ms var(--ease); }
+.overview-frame:has(.ov-label:is(:hover, :focus-visible)) .ov-area,
+.overview-frame:has(.ov-area:hover) .ov-area { background: rgba(24, 20, 44, .16); }
+.overview-frame .ov-area:hover,
+.overview-frame:has(.ov-label[data-area="slides"]:is(:hover, :focus-visible)) .ov-area[data-area="slides"],
+.overview-frame:has(.ov-label[data-area="board"]:is(:hover, :focus-visible)) .ov-area[data-area="board"],
+.overview-frame:has(.ov-label[data-area="tutor"]:is(:hover, :focus-visible)) .ov-area[data-area="tutor"] { background: rgba(255, 253, 255, .04); box-shadow: inset 0 0 0 1.5px rgba(139, 122, 175, .75); }
+.ov-label { position: absolute; padding: 5px 11px; border-radius: 999px; border: 1px solid rgba(255, 253, 255, .22); background: rgba(28, 25, 46, .52); color: #f6f3fc; font-size: 12px; line-height: 1.2; letter-spacing: .04em; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); cursor: default; transition: background-color 220ms var(--ease), border-color 220ms var(--ease); }
+.ov-label:hover, .ov-label:focus-visible,
+.overview-frame:has(.ov-area[data-area="slides"]:hover) .ov-label[data-area="slides"],
+.overview-frame:has(.ov-area[data-area="board"]:hover) .ov-label[data-area="board"],
+.overview-frame:has(.ov-area[data-area="tutor"]:hover) .ov-label[data-area="tutor"] { background: rgba(98, 81, 140, .78); border-color: rgba(255, 253, 255, .4); outline: none; }
+
+/* #space heading: the old statement line sits over the title as its lead-in. */
+.space .space-head { width: 57%; }
+.space .space-head h2 { width: auto; }
+.space-lead { margin: 0 0 18px; font-family: var(--serif); font-weight: 300; font-size: clamp(1.15rem, 0.9rem + 0.8vw, 1.6rem); line-height: 1.4; color: var(--ink-muted); }
+
+/* Feature list (left) and player (right). */
+.features { padding-top: 0; padding-bottom: clamp(80px, 10vw, 148px); }
+.feat { display: grid; grid-template-columns: minmax(280px, 5fr) minmax(0, 8fr); gap: clamp(32px, 4vw, 64px); align-items: center; }
+.feat-list { list-style: none; margin: 0; padding: 0; counter-reset: feat; border-bottom: 1px solid var(--border); }
+.feat-list li { position: relative; counter-increment: feat; border-top: 1px solid var(--border); }
+.feat-list h3 { margin: 0; font: inherit; }
+.feat-toggle { width: 100%; min-height: 56px; display: flex; align-items: baseline; gap: 16px; padding: 16px 0; border: 0; background: none; color: var(--ink-muted); font-family: var(--serif); font-weight: 300; font-size: clamp(1.25rem, 1rem + .6vw, 1.6rem); line-height: 1.3; text-align: left; cursor: pointer; transition: color 200ms var(--ease); }
+.feat-toggle::before { content: counter(feat, decimal-leading-zero); flex: none; width: 2em; font-family: var(--mono); font-size: 12px; letter-spacing: .06em; color: #8a80a3; }
+.feat-toggle:hover, .feat-list li.is-open .feat-toggle { color: var(--ink); }
+.feat-toggle:focus-visible { outline: 2px solid var(--action); outline-offset: 2px; border-radius: 4px; }
+.feat-body { display: grid; grid-template-rows: 0fr; visibility: hidden; transition: grid-template-rows 320ms var(--ease), visibility 0s 320ms; }
+.feat-inner { min-height: 0; overflow: hidden; }
+.feat-list li.is-open .feat-body { grid-template-rows: 1fr; visibility: visible; transition: grid-template-rows 320ms var(--ease), visibility 0s; }
+.feat-body p { margin: 0; padding: 0 0 20px 40px; max-width: 30em; font-size: 15px; line-height: 1.75; color: var(--ink-soft); }
+/* Playback progress of the open item: a 2px brand line on its top edge. */
+.feat-list li::after { content: ""; position: absolute; left: 0; top: -1px; height: 2px; width: calc(var(--p, 0) * 100%); background: var(--action); opacity: 0; }
+.feat-list li.is-open::after { opacity: 1; }
+
+.feat-frame { aspect-ratio: 16 / 10; }
+.feat-video { display: block; width: 100%; height: 100%; object-fit: cover; background: var(--stage); }
+.feat-play { position: absolute; inset: 0; margin: auto; width: 64px; height: 64px; border: 1px solid rgba(255, 253, 255, .3); border-radius: 999px; background: rgba(28, 25, 46, .6); cursor: pointer; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+.feat-play[hidden] { display: none; }
+.feat-play span { position: absolute; left: 50%; top: 50%; margin: -9px 0 0 -6px; border-style: solid; border-width: 9px 0 9px 15px; border-color: transparent transparent transparent #f6f3fc; }
+.feat-play:focus-visible { outline: 2px solid #f6f3fc; outline-offset: 3px; }
+
+/* Phones: one column; the player sits under the open item. */
+@media (max-width: 760px) {
+  .space .space-head { width: 100%; }
+  .feat { display: block; }
+  .feat-stage { display: none; }
+  .feat-inline { padding: 0 0 28px; }
+  .feat-inline .feat-frame { border-radius: 14px; box-shadow: none; }
+  .feat-body p { padding-left: 0; padding-bottom: 16px; }
+  .ov-label { padding: 2px 7px; font-size: 10px; letter-spacing: .02em; }
+  .overview-frame { border-radius: 14px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .feat-body, .feat-list li.is-open .feat-body { transition: none; }
+}

@@ -1,0 +1,45 @@
+/* Hero sky: the painted cloud image, its haze layer, and the hero's spacing on top of the base tokens in index.html. */
+html { scroll-behavior: smooth; }
+.sky { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.sky-image { position: absolute; top: -2%; left: -4%; width: 108%; height: min(1120px, 125svh); background: #d7d2ec url('assets/hero-airy.webp') center / cover no-repeat; opacity: .64; transform-origin: 50% 40%; will-change: transform; }
+.sky::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(231,226,246,.12), transparent 28%, transparent 42%, #e5e0f2 78%); }
+.sky-haze { position: absolute; top: min(620px, 68svh); left: -15%; width: 130%; height: 300px; background: radial-gradient(ellipse at 30% 45%, rgba(255,249,250,.6), transparent 62%), radial-gradient(ellipse at 75% 60%, rgba(235,226,251,.8), transparent 65%); filter: blur(24px); will-change: transform; }
+#scene { height: min(920px, 108svh); z-index: 1; opacity: .84; }
+.hero-body { padding-top: clamp(42px, 8svh, 88px); gap: 26px; }
+.top { padding-block: 22px; }
+.logo { font-size: 30px; }
+.eyebrow { color: #625777; font-size: 11px; letter-spacing: .12em; }
+.scroll-cue { display: flex; flex-direction: column; align-items: center; gap: 12px; margin-top: clamp(35px, 7svh, 90px); color: #645976; text-decoration: none; font-size: 11px; letter-spacing: .14em; }
+.scroll-cue span:last-child { font-size: 24px; font-family: var(--serif); line-height: 1; }
+.scroll-cue:hover { color: #382b58; }
+.preview { margin-top: clamp(42px, 8svh, 88px); scroll-margin-top: 24px; }
+.frame { --ink: #f9fafb; --ink-muted: #9da3af; --border: #2b2f3b; color: var(--ink); border-color: rgba(80,65,115,.2); box-shadow: 0 24px 90px rgba(70,54,107,.16); }
+.statement { padding-block: clamp(80px, 12vh, 140px); }
+.card { background: rgba(255,253,255,.42); border-color: #dfd9eb; }
+@media (max-width: 680px) {
+  .top { gap: 8px; padding-block: 14px; }
+  .logo { font-size: 27px; }
+  .top > .pill { padding-inline: 14px; font-size: 12px; }
+  .nav { order: 3; width: 100%; justify-content: center; }
+  .nav { justify-content: space-evenly; gap: 0; }
+  .nav a { font-size: 12px; padding-inline: 8px; }
+  .hero-body { padding-top: 36px; gap: 22px; }
+  h1 { font-size: clamp(2rem, 7.4vw, 3.15rem); }
+  .lede { max-width: 27em; padding-inline: 12px; font-size: 14px; line-height: 1.9; }
+  .hint { font-size: 11px; }
+  .sky-image { background-position: 51% center; height: 100svh; }
+  .sky::after { background: linear-gradient(180deg, rgba(231,226,246,.12), transparent 35%, #e5e0f2 80%); }
+  .scroll-cue { margin-top: 34px; }
+  .preview { margin-top: 36px; }
+  .bar .timer { display: none; }
+  .quiz { margin-top: 0; gap: 7px; padding: 10px; }
+  .quiz .q { font-size: 14px; }
+  .quiz .tag { font-size: 10px; }
+  .stage:has(.quiz:not([hidden])) { aspect-ratio: auto; min-height: 310px; padding-bottom: 14px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .sky-image, .sky-haze { transform: none !important; will-change: auto; }
+}
+/* Let the painted clouds dissolve before its lower edge enters the viewport. */
+.sky-image { mask-image: linear-gradient(#000 0%, #000 65%, transparent 100%); -webkit-mask-image: linear-gradient(#000 0%, #000 65%, transparent 100%); }

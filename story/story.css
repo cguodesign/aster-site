@@ -1,0 +1,148 @@
+/* The study-room story as a block that can sit in any page: everything is scoped to .as-story
+   (state classes as-live / as-ready / as-reduced / as-still / as-joined sit on that element too).
+   Used by site/index.html (between the values and #plan) and by site/story/index.html (debug page). */
+.as-story { --as-canvas: #f2eff8; --as-ink: #302d4d; --as-ink-soft: #514b6c; position: relative; z-index: 1; }
+.as-story img { max-width: 100%; display: block; }
+
+/* ---------------------------------------------------------------- 1. room */
+.as-room { position: relative; height: calc(var(--as-screens, 10.1) * 100svh); }
+.as-stage { position: sticky; top: 0; height: 100svh; overflow: hidden; background: var(--as-canvas); }
+.as-stage canvas, .as-stage .as-poster { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.as-stage canvas { opacity: 0; transition: opacity 0.5s linear; }
+.as-live.as-ready .as-stage canvas { opacity: 1; }   /* fades in over the poster (frame 1) */
+.as-stage .as-handoff { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; pointer-events: none; }
+/* The K7 hand-off happens inside a pale lavender mist (as in the video): flat cartoon clouds go in,
+   painted clouds come out, and the two never show at full strength together. */
+.as-stage .as-fog { position: absolute; inset: -6%; opacity: 0; pointer-events: none; will-change: opacity, transform;
+  background:
+    radial-gradient(60% 45% at 30% 62%, rgba(255, 252, 255, 0.9), rgba(255, 252, 255, 0) 70%),
+    radial-gradient(55% 40% at 72% 40%, rgba(250, 244, 255, 0.85), rgba(250, 244, 255, 0) 70%),
+    linear-gradient(180deg, #e9e3f7 0%, #f1ebf8 45%, #f4ecf4 100%); }
+.as-status { position: absolute; left: 50%; bottom: 28px; transform: translateX(-50%); margin: 0; font-size: 13px; color: var(--as-ink-soft); letter-spacing: 0.02em; }
+.as-cue { position: absolute; left: 50%; bottom: 26px; transform: translateX(-50%); margin: 0; font-size: 13px; letter-spacing: 0.08em;
+  color: rgba(252, 250, 255, 0.9); text-shadow: 0 1px 10px rgba(20, 18, 40, 0.4); opacity: 0; transition: opacity 0.6s; }
+.as-ready .as-cue { opacity: calc(1 - (var(--as-frame, 1) - 1) / 20); }
+/* In the home page the room scrolls in under the values: a short wash from the page colour softens
+   its top edge, and fades as the story starts. */
+.as-joined:not(.as-opening) .as-stage::after { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 22svh; pointer-events: none;
+  background: linear-gradient(180deg, var(--as-canvas), rgba(242, 239, 248, 0)); opacity: calc(1 - (var(--as-frame, 1) - 1) / 14); }
+.as-stills { display: none; }
+.as-still .as-cue { display: none; }
+
+/* ---------------------------------------------------------------- 2. descent */
+/* The descent starts on top of the room's last screen (hero-airy, after the mist), so the room's stage
+   never scrolls away as a block: the same picture is simply there, then dissolves into the painting. */
+.as-descend { position: relative; height: 340svh; margin-top: -100svh; }
+.as-stage2 { position: sticky; top: 0; height: 100svh; overflow: hidden; background: linear-gradient(180deg, #91aaf9, #c9c3f0 60%, #e2d3ec); }
+.as-forest { position: absolute; left: 0; top: 0; will-change: transform; }
+.as-forest img { width: 100%; height: auto; }
+.as-hero { position: absolute; inset: 0; will-change: opacity; }
+.as-hero img { width: 100%; height: 100%; object-fit: cover; }
+/* The copy of #plan must not bring #plan's own (opaque) background: only its picture and copy fade in. */
+.as-plan-clone { position: absolute; left: 0; top: 0; width: 100%; margin: 0 !important; pointer-events: none; background: none !important; }
+/* The reader sits right of centre, low in the picture; text and product keep to the left of them. */
+/* Home page: the main line alone, large, in the serif of the headings. */
+.as-intro .as-tagline { margin: 0; width: max-content; max-width: calc(100vw - 32px); font-family: var(--serif, 'Source Serif 4', serif); font-weight: 300; font-size: clamp(2.4rem, 1rem + 4vw, 5rem); line-height: 1.15; letter-spacing: 0.02em; color: #2f2b4f; }
+.as-intro { position: absolute; left: max(16px, 6vw); top: calc(var(--as-top, 0px) + 8svh); max-width: 30em; padding: 0; opacity: 0; color: #2f2b4f; }
+.as-intro h2 { margin: 0; font-family: var(--serif, 'Source Serif 4', serif); font-weight: 300; font-size: clamp(44px, 7vw, 96px); letter-spacing: -0.01em; line-height: 1.1; }
+.as-intro p { margin: 10px 0 0; max-width: 26em; font-size: clamp(16px, 1.5vw, 20px); color: #4a4470; text-wrap: balance; }
+.as-product { position: absolute; left: max(16px, 6vw); bottom: 9svh; width: min(50vw, 860px); margin: 0; opacity: 0; }
+.as-product .as-frame { border: 1px solid rgba(249, 250, 251, 0.14); border-radius: 14px; overflow: hidden; background: #14181F;
+  box-shadow: 0 24px 60px rgba(40, 32, 80, 0.28), 0 2px 8px rgba(40, 32, 80, 0.2); }
+.as-product video, .as-product img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; }
+
+/* Portrait: text at the top, the product under it, both above the reader (low, right of centre). */
+@media (orientation: portrait) {
+  .as-intro { left: 0; right: 0; top: calc(var(--as-top, 0px) + 5svh); max-width: none; padding: 0 24px; text-align: center; }
+  .as-intro p { margin-left: auto; margin-right: auto; }
+  .as-intro .as-tagline { margin-inline: auto; }
+  .as-product { left: 50%; translate: -50% 0; top: 27svh; bottom: auto; width: min(88vw, 640px); }
+}
+
+/* ---------------------------------------------------------------- opening (home page hero)
+   The first frame of the room is the hero. The room fills the screen as the shot frames it; a deep
+   plum scrim rises from the bottom, and the headline, one short line and two pills (the waitlist
+   field, "run from source") sit centred on it in white. They fade over the first third of a screen
+   of scrolling (story.js sets --as-copy). Reduced motion keeps the plain layout further down. */
+.as-hero-copy { position: absolute; z-index: 3; left: 0; right: 0; bottom: max(7svh, calc(env(safe-area-inset-bottom, 0px) + 40px));
+  display: flex; flex-direction: column; align-items: center; gap: 18px; padding: 0 max(16px, 4vw); text-align: center; }
+.as-story:not(.as-reduced) .as-hero-copy { --ink: #fcfaff; --ink-soft: rgba(252, 250, 255, 0.86); --ink-muted: rgba(252, 250, 255, 0.72);
+  color: var(--ink); text-shadow: 0 1px 24px rgba(20, 15, 34, 0.35); }
+.as-hero-copy h1 { max-width: 20em; font-size: clamp(2.4rem, 1rem + 4.2vw, 5.4rem); line-height: 1.08; letter-spacing: -0.015em; }
+.as-hero-copy h1 br { display: none; }
+.as-hero-copy .lede { max-width: 34em; font-size: clamp(1rem, 0.94rem + 0.3vw, 1.2rem); }
+.as-hero-copy .waitlist { align-items: center; max-width: none; gap: 12px; margin-top: 10px; }
+.as-hero-copy .waitlist { width: 100%; }
+.hero-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 12px; width: 100%; }
+/* "Coming soon": a quiet pill, white on the dark ground; a small dot in front. */
+.soon-pill { display: inline-flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 24px; border-radius: 999px; background: var(--action); color: var(--on-action); font-size: 15px; font-weight: 600; text-decoration: none; text-shadow: none; transition: background-color 200ms var(--ease, ease); }
+.soon-pill:hover { background: var(--action-deep); }
+.as-story:not(.as-reduced) .as-hero-copy .soon-pill { background: #fcfaff; color: #2e2747; }
+.as-story:not(.as-reduced) .as-hero-copy .soon-pill:hover { background: #ebe5f8; }
+.soon-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: currentColor; opacity: 0.55; }
+.as-opening .as-stage::before { content: ''; position: absolute; inset: 0; z-index: 2; pointer-events: none; opacity: var(--as-copy, 1);
+  background: linear-gradient(0deg, rgba(30, 23, 46, 0.88) 0%, rgba(30, 23, 46, 0.7) 28%, rgba(30, 23, 46, 0.3) 48%, rgba(30, 23, 46, 0) 64%); }
+/* While the room loads, its note sits at the top so it stays clear of the copy. */
+.as-opening .as-status { top: calc(var(--as-top, 0px) + 20px); bottom: auto; }
+@media (max-width: 760px) {
+  .as-hero-copy { gap: 14px; padding: 0 20px; }
+  .as-hero-copy h1 { font-size: clamp(2.1rem, 9.4vw, 3.2rem); }
+  .as-hero-copy h1 br { display: inline; }
+  .as-hero-copy .lede { font-size: 15px; line-height: 1.6; padding-inline: 0; }
+  .hero-actions { flex-direction: column; align-items: stretch; width: 100%; gap: 10px; }
+  .as-opening .as-stage::before { background: linear-gradient(0deg, rgba(30, 23, 46, 0.9) 0%, rgba(30, 23, 46, 0.72) 34%, rgba(30, 23, 46, 0.28) 54%, rgba(30, 23, 46, 0) 68%); }
+}
+
+/* ---------------------------------------------------------------- progress through the story
+   One thin line along the bottom edge of the screen (above the phone's gesture area): a pale track
+   and the brand-purple part already played. Click or drag anywhere on it to move through the story
+   in proportion; arrow keys work too. Hidden outside the story. Reduced motion: the chapter list. */
+.as-progress { position: fixed; z-index: 35; left: 0; right: 0; bottom: 0; opacity: 0; pointer-events: none; transition: opacity 0.25s; }
+.as-progress.on { opacity: 1; pointer-events: auto; }
+.as-progress-bar { position: relative; height: calc(16px + env(safe-area-inset-bottom, 0px)); cursor: pointer; touch-action: none; outline: none; }
+.as-progress-bar::before, .as-progress-fill { content: ''; position: absolute; left: 0; right: 0; bottom: env(safe-area-inset-bottom, 0px); height: 3px; transition: height 0.15s; }
+.as-progress-bar::before { background: rgba(236, 232, 248, 0.42); }
+.as-progress-fill { background: #62518c; transform-origin: 0 50%; transform: scaleX(0); }
+.as-progress-bar:hover::before, .as-progress-bar:hover .as-progress-fill, .as-progress-bar.dragging::before, .as-progress-bar.dragging .as-progress-fill { height: 5px; }
+.as-progress-bar:focus-visible::before { box-shadow: 0 0 0 2px #62518c; }
+.as-progress-toc { display: none; }
+
+/* ---------------------------------------------------------------- reduced motion / no WebGL */
+.as-reduced .as-room { height: auto; }
+.as-reduced .as-stills { display: grid; gap: 40px; list-style: none; margin: 0 auto; padding: 96px 16px 64px; max-width: 1100px; }
+.as-reduced .as-progress ~ .as-room .as-stills { padding-top: 24px; }
+.as-reduced .as-progress { position: static; display: block; height: auto; opacity: 1; pointer-events: auto; max-width: 1100px; margin: 0 auto; padding: calc(var(--as-top, 0px) + 32px) 16px 0; }
+.as-reduced .as-progress-bar { display: none; }
+.as-reduced .as-progress-toc { display: block; }
+.as-reduced .as-progress-chapters { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 24px; }
+.as-reduced .as-progress-chapters a { font-size: 14px; color: #4f3f77; text-decoration: underline; text-underline-offset: 4px; }
+.as-reduced .as-hero-copy { position: relative; top: auto; right: auto; bottom: auto; left: auto; width: auto; max-width: 1100px; margin: 0 auto; padding: calc(var(--as-top, 0px) + 32px) 16px 0; align-items: flex-start; text-align: left; }
+.as-reduced .as-room .as-stage { display: block; position: relative; height: auto; background: none; overflow: visible; }
+.as-reduced .as-stage > :not(.as-hero-copy) { display: none; }
+.as-reduced .hero-actions { justify-content: flex-start; }
+.as-reduced .as-hero-copy .waitlist { align-items: flex-start; }
+.as-reduced .as-hero-copy h1 br { display: inline; }
+.as-reduced .as-stage::before { display: none; }   /* the dark scrim belongs to the live opening only */
+.as-reduced .as-stills img { width: 100%; height: auto; border-radius: 10px; }
+.as-reduced .as-stills p { margin: 12px 0 0; font-family: var(--serif, 'Source Serif 4', serif); font-size: 20px; color: var(--as-ink); }
+.as-reduced .as-descend { height: auto; margin-top: 0; }
+.as-reduced .as-stage2 { position: relative; height: auto; min-height: 0; background: none; padding: 24px 16px 72px; }
+.as-reduced .as-hero, .as-reduced .as-plan-clone { display: none; }
+.as-reduced .as-forest { position: relative; left: 0; transform: none !important; width: 100% !important; opacity: 1 !important; }
+.as-reduced .as-intro { position: relative; left: auto; right: auto; top: auto; opacity: 1 !important; transform: none !important; max-width: 1100px; margin: 0 auto; padding: 0; text-align: left; }
+.as-reduced .as-product { position: relative; left: auto; bottom: auto; top: auto; translate: none; margin: 32px auto 0; width: min(90vw, 980px); opacity: 1 !important; transform: none !important; }
+/* In the home page the next section (#plan) already shows the forest; reduced motion leaves it out here. */
+.as-reduced.as-joined .as-forest { display: none; }
+
+/* ---------------------------------------------------------------- landing in #plan (home page)
+   #plan sits under the story's last screen (negative margin) and is restyled to a full screen with
+   its picture behind the copy, so the story's last frame can be laid over it exactly. Copy and
+   picture are unchanged. */
+.as-story.as-joined + .story-joined { margin-top: -100svh; min-height: 100svh; z-index: 0; }
+.as-story.as-reduced + .story-joined { margin-top: 0; }
+.story-joined .story-image { transform: none !important; }   /* no parallax: the story hands over to it */
+@media (max-width: 760px) {
+  .story-joined { display: grid; align-items: start; min-height: 100svh; }
+  .story-joined .story-picture { position: absolute; inset: 0; order: 0; z-index: -2; aspect-ratio: auto; }
+  .story-joined .story-layout { padding-top: 12svh; }
+}

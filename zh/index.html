@@ -1,0 +1,426 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Aster · 把一份大纲，变成能学下去的课</title>
+<meta name="description" content="Aster 为你的教学大纲生成互动幻灯片和讲解文章，配上白板标注与随堂测验，再按你的掌握程度安排复习。一切都在你自己的电脑上进行。">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="theme-color" content="#f2eff8">
+<!-- The site's address lives in these lines and the same ones in the English page (built from this
+     file): canonical, the language alternates, og:url and og:image. It is the GitHub Pages address (the account's custom domain, then
+     /aster-site/); when Aster gets its own domain, replace it in both places (search for the address). -->
+<link rel="canonical" href="https://chong.works/aster-site/zh/">
+<link rel="alternate" hreflang="en" href="https://chong.works/aster-site/">
+<link rel="alternate" hreflang="zh-CN" href="https://chong.works/aster-site/zh/">
+<link rel="alternate" hreflang="x-default" href="https://chong.works/aster-site/">
+<meta property="og:url" content="https://chong.works/aster-site/zh/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Aster">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:title" content="Aster · 一次只开一扇窗。">
+<meta property="og:description" content="Aster 为你的教学大纲生成互动幻灯片和讲解文章，配上白板标注与随堂测验，再按你的掌握程度安排复习。一切都在你自己的电脑上进行。">
+<meta property="og:image" content="https://chong.works/aster-site/og/aster-zh.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Aster：树下读书的人，淡紫色的薄雾。一次只开一扇窗。">
+<meta name="twitter:card" content="summary_large_image">
+<style>img{max-width:100%}[hidden]{display:none!important}</style>
+<link rel="stylesheet" href="../fonts/fonts.css">
+<!-- three.js r160, self-hosted; the story (the hero) loads it when the room starts. -->
+<script type="importmap">{"imports":{"three":"../vendor/three/0.160.0/three.module.min.js","three/addons/":"../vendor/three/0.160.0/examples/jsm/"}}</script>
+<style>
+/* Lavender daylight page. The hero sky and the painted scenes live in atmosphere.css / stories.css;
+   framed pictures keep their own dark tokens (see .frame in atmosphere.css). */
+:root {
+  --canvas: #f2eff8;
+  --stage: #14181F;
+  --surface: #e9e5f3;
+  --surface-subtle: #272B35;
+  --border: #d7d1e5;
+  --ink: #302d4d;
+  --ink-soft: #514b6c;
+  --ink-muted: #625b7c;
+  --glass: rgba(255, 253, 255, 0.24);
+  --glass-border: rgba(79, 67, 112, 0.22);
+  --action: #62518c;
+  --action-deep: #4f3f77;
+  --action-soft: #8b7aaf;
+  --on-action: #fcfaff;
+  --paper: #FCFBF8;
+  --paper-ink: #111827;
+  --paper-muted: #344256;
+  --paper-accent: #1D4FD7;
+  --success: #1D865F;
+  --danger-ink: #922c48;
+  --selection: #d2c8ee;
+  --serif: 'Source Serif 4', 'Noto Serif CJK SC', 'Songti SC', STSong, serif;
+  --sans: 'Plus Jakarta Sans', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  --mono: 'JetBrains Mono', 'SFMono-Regular', Consolas, monospace;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--canvas); color: var(--ink); font-family: var(--sans); font-size: 16px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+::selection { background: var(--selection); }
+:focus-visible { outline: 2px solid var(--action); outline-offset: 3px; }
+a { color: var(--ink); }
+h1, h2 { text-wrap: balance; }
+.ic { fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.wrap { max-width: 1360px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+@media (min-width: 900px) { .wrap { padding-left: max(40px, env(safe-area-inset-left, 0px)); padding-right: max(40px, env(safe-area-inset-right, 0px)); } }
+
+/* hero */
+/* Fixed navigation over the story (the story is the hero now). */
+.site-top { position: fixed; z-index: 40; top: 0; left: 0; right: 0; background: linear-gradient(180deg, rgba(242,239,248,0.8), rgba(242,239,248,0.56)); -webkit-backdrop-filter: blur(12px) saturate(1.1); backdrop-filter: blur(12px) saturate(1.1); border-bottom: 1px solid rgba(79,67,112,0.08); }
+.site-top .top { padding-block: 10px; }
+.hero { position: relative; isolation: isolate; overflow: hidden; display: flex; flex-direction: column; min-height: 100svh; background: #e5e0f2; }
+#scene { position: absolute; inset: 0; width: 100%; height: 100%; display: block; pointer-events: none; }
+.hero-fade { position: absolute; left: 0; right: 0; bottom: 0; height: 130px; background: linear-gradient(180deg, rgba(242,239,248,0), var(--canvas)); pointer-events: none; z-index: 0; }
+.hero > .wrap { position: relative; z-index: 2; width: 100%; }
+
+.top { padding-block: 20px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+/* The menu sits on the right, next to the "coming soon" pill. */
+.top .nav { margin-left: auto; }
+.logo { display: inline-flex; align-items: center; min-height: 44px; text-decoration: none; font-family: var(--serif); font-size: 26px; letter-spacing: -0.01em; }
+.nav { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+.nav a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px; font-size: 14px; font-weight: 500; color: var(--ink-soft); text-decoration: none; transition: color 200ms var(--ease); }
+.nav a:hover { color: var(--ink); }
+/* Language switch: the other language's own name, set a little apart. */
+.nav a.lang { font-family: var(--mono); font-size: 12px; letter-spacing: .06em; }
+.nav a.lang:lang(zh-CN) { font-family: var(--sans); letter-spacing: 0; }
+.pill { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 22px; border-radius: 999px; border: 1px solid var(--glass-border); background: var(--glass); color: var(--ink); font: inherit; font-size: 14px; font-weight: 500; text-decoration: none; cursor: pointer; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); transition: background-color 200ms var(--ease), border-color 200ms var(--ease); }
+.pill:hover { background: rgba(255,253,255,0.48); border-color: rgba(79,67,112,0.4); }
+
+.hero-body { flex: 1 1 auto; padding-block: clamp(28px, 6vh, 72px) 0; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 28px; }
+.eyebrow { display: inline-flex; align-items: center; gap: 10px; font-family: var(--mono); font-size: 12px; letter-spacing: 0.08em; color: var(--ink-muted); }
+.dot { width: 6px; height: 6px; border-radius: 999px; background: var(--action-soft); box-shadow: 0 0 0 4px rgba(139,122,175,0.1); }
+h1 { margin: 0; max-width: 16em; font-family: var(--serif); font-weight: 300; font-size: clamp(2.6rem, 1.25rem + 5.1vw, 6rem); line-height: 1.17; letter-spacing: -0.01em; }
+.lede { margin: 0; max-width: 34em; font-size: clamp(1rem, 0.93rem + 0.25vw, 1.15rem); line-height: 1.75; color: var(--ink-soft); }
+
+.waitlist { display: flex; flex-direction: column; align-items: center; gap: 14px; width: 100%; max-width: 520px; }
+.hint { margin: 0; font-size: 13px; line-height: 1.6; color: var(--ink-muted); }
+
+.frame { width: 100%; border: 1px solid rgba(249,250,251,0.14); border-bottom: 0; border-radius: 20px 20px 0 0; overflow: hidden; background: var(--stage); box-shadow: 0 -20px 80px rgba(112,112,219,0.25), 0 30px 80px rgba(0,0,0,0.5); }
+
+
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<link rel="preload" as="image" href="../story/stills/k0-hero.webp" media="(orientation: landscape)" fetchpriority="high">
+<link rel="preload" as="image" href="../story/stills/k0-hero-portrait.webp" media="(orientation: portrait)" fetchpriority="high">
+<!-- ?v= keeps browsers from reusing an old copy after a change; bump it when these files change. -->
+<link rel="stylesheet" href="../atmosphere.css?v=20261116a">
+<link rel="stylesheet" href="../stories.css?v=20261116a">
+<link rel="stylesheet" href="../story/story.css?v=20261116a">
+<link rel="stylesheet" href="../features.css?v=20261116a">
+<link rel="stylesheet" href="../bento.css?v=20261116a">
+<link rel="stylesheet" href="../acts.css?v=20261116a">
+</head>
+<body>
+<header class="site-top" id="top">
+  <div class="wrap top">
+      <a class="logo" href="#top" aria-label="Aster 首页">Aster</a>
+      <nav class="nav" aria-label="主导航">
+        <a href="#plan">设置</a>
+        <a href="#space">学习</a>
+        <a href="#science">复习</a>
+        <a href="#values">价值</a>
+        <a class="lang" href="../" hreflang="en" lang="en">EN</a>
+      </nav>
+      <a class="pill" href="#start">即将推出</a>
+      </div>
+</header>
+
+<!-- The home page opens on the study-room story (site/story/): the first frame of the room (a still,
+     then the three.js scene once it has loaded) with the headline and the waitlist over it. Scrolling
+     plays the shot; the descent lands in #plan. Reduced motion shows stills and a chapter list. -->
+<div class="as-story as-joined as-opening">
+  <!-- Progress through the story: one thin line along the bottom edge (click or drag it to move
+       through the story); reduced motion shows the chapter list instead. -->
+  <div class="as-progress">
+    <div class="as-progress-bar" role="slider" tabindex="0" aria-label="故事进度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="书桌"><div class="as-progress-fill"></div></div>
+    <nav class="as-progress-toc" aria-label="故事章节">
+      <ol class="as-progress-chapters">
+        <li><a href="#story-desk" data-chapter="desk">书桌</a></li>
+        <li><a href="#story-too-much" data-chapter="too-much">东西太多了</a></li>
+        <li><a href="#story-window" data-chapter="window">推开窗</a></li>
+        <li><a href="#story-landing" data-chapter="landing">落地</a></li>
+      </ol>
+    </nav>
+  </div>
+
+  <section class="as-room" aria-label="学习房间：书桌上越来越乱，屏幕上的窗口越堆越多，最后弹出一个警告：Too many windows are open.">
+    <div class="as-stage">
+      <!-- First frame as a still, shown until the 3D room has loaded. -->
+      <picture><source media="(orientation: portrait)" srcset="../story/stills/k0-hero-portrait.webp" width="780" height="1688"><img class="as-poster" src="../story/stills/k0-hero.webp" alt="" width="1600" height="1000" fetchpriority="high"></picture>
+      <canvas aria-hidden="true"></canvas>
+      <img class="as-handoff" data-src="../assets/hero-airy.webp" alt="" width="2560" height="1440" decoding="async">
+      <div class="as-fog" aria-hidden="true"></div>
+      <p class="as-status" role="status" data-loading="正在载入房间"></p>
+      <!-- The hero, after the reference look: the room fills the screen, a deep scrim rises from the
+           bottom, and one big line, one short line and two pills sit centred on it. -->
+      <div class="as-hero-copy">
+        <h1>把一份大纲，<br>变成能学下去的课。</h1>
+        <p class="lede">幻灯片、白板、测验和复习，都在你自己的电脑上。</p>
+        <!-- Coming soon: no form and no promise; the pill leads to the note at the end of the page.
+             The #waitlist anchor stays for old links. -->
+        <div class="waitlist" id="waitlist">
+          <a class="soon-pill" href="#start"><span class="soon-dot" aria-hidden="true"></span>即将推出</a>
+          <p class="hint">测试版准备好了，会在这里公布。</p>
+        </div>
+      </div>
+    </div>
+    <ol class="as-stills">
+      <li id="story-desk"><img src="../story/stills/k0.webp" alt="早晨的书桌：笔记本电脑、闹钟、台灯、咖啡和一份三明治，窗外是对面的楼。" width="1600" height="900" loading="lazy"><p>早晨，一张整齐的书桌。</p></li>
+      <li><img src="../story/stills/k2.webp" alt="屏幕上叠满了窗口，边框上贴着便利贴，桌上越来越乱。" width="1600" height="900" loading="lazy"><p>一天又一天，窗口越开越多，桌面越来越乱。</p></li>
+      <li id="story-too-much"><img src="../story/stills/k3.webp" alt="屏幕正中弹出警告：Too many windows are open." width="1600" height="900" loading="lazy"><p>Too many windows are open.</p></li>
+      <li id="story-window"><img src="../story/stills/k5.webp" alt="两扇窗正向外打开，外面是黎明时的屋顶和云。" width="1600" height="900" loading="lazy"><p>抬头，推开窗。</p></li>
+      <li><img src="../story/stills/k7.webp" alt="粉紫色的黎明天空，低处是云。" width="1600" height="900" loading="lazy"><p>飞上黎明的天空。</p></li>
+    </ol>
+  </section>
+  <section class="as-descend" id="story-landing" aria-label="从天空降落到树下读书的人">
+    <div class="as-stage2">
+      <div class="as-forest"><img data-src="../story/assets/forest-airy-tall.webp" alt="" width="1920" height="2160" decoding="async"></div>
+      <div class="as-hero"><img data-src="../assets/hero-airy.webp" alt="" width="2560" height="1440" decoding="async"></div>
+    </div>
+  </section>
+</div>
+
+
+
+
+
+
+
+<!-- Act one, setup: the descent lands here; the title sits centred at the bottom of the picture. -->
+<section class="story-scene story-study story-joined act-scene" id="plan" aria-labelledby="plan-title">
+  <div class="story-picture"><img class="story-image" src="../assets/forest-airy.webp" alt="淡紫薄雾中，远处只有几棵虚化的树，一位小小的手绘人物坐着读书。" width="1920" height="1080" loading="lazy" decoding="async"></div>
+  <div class="story-wash" aria-hidden="true"></div>
+  <div class="wrap story-layout">
+    <div class="story-copy">
+      <p class="act-eyebrow">第一幕 · 设置</p>
+      <h2 id="plan-title">开始很简单。</h2>
+      <p class="story-description">接入你常用的 AI 助手，说出想学什么，排好顺序就能开始。</p>
+    </div>
+  </div>
+</section>
+
+<!-- Three cards (same 12px corners as the bento): an icon, a label and one sentence each; on hover a
+     lavender-to-rose gradient rises from the bottom. Styles: stories.css (.ways). -->
+<section class="act-body wrap" aria-label="设置的三步">
+  <ul class="ways">
+    <li class="way"><svg class="ic way-ic" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22v-5"/><path d="M9 8V2"/><path d="M15 8V2"/><path d="M18 8v5a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V8Z"/></svg><div class="way-foot"><span class="way-label">01 接入你的 AI 助手</span><p>Claude&nbsp;Code、Codex 或 Claude&nbsp;Desktop 都可以，用的是你自己的订阅或 API Key。</p></div></li>
+    <li class="way"><svg class="ic way-ic" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><div class="way-foot"><span class="way-label">02 说出学习目标</span><p>一句“我想学杠杆原理”，或者一份 YAML、Markdown 大纲。</p></div></li>
+    <li class="way"><svg class="ic way-ic" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 12h11"/><path d="M10 18h11"/><path d="M10 6h11"/><path d="M4 10h2"/><path d="M4 6h1v4"/><path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg><div class="way-foot"><span class="way-label">03 调整课程顺序</span><p>概念地图、每天学什么、哪天复习都摆在面前，改到满意再生成。</p></div></li>
+  </ul>
+</section>
+
+<!-- Act two, learning: the one-screen picture, then the six features. -->
+<section class="learning-rhythm wrap space" id="space" aria-labelledby="space-title">
+  <div class="act-head"><p class="act-eyebrow">第二幕 · 学习</p><h2 id="space-title">只开一扇窗。</h2><p class="act-lead">课件、白板、笔记和 AI 助教在同一屏，不用来回切换。</p></div>
+  <!-- The opposite of the story's "Too many windows are open.": slides, whiteboard and tutor in one
+       screen. Light labels; hovering one (or its area) lifts that area a little. -->
+  <figure class="overview">
+    <div class="frame overview-frame">
+      <img src="../assets/overview-with-ai-1200.webp" srcset="../assets/overview-with-ai-1200.webp 1200w, ../assets/overview-with-ai-2400.webp 2400w" sizes="(min-width: 1440px) 1280px, calc(100vw - 32px)" width="2400" height="1350" loading="lazy" decoding="async" alt="Aster 的学习区：左边是幻灯片「机械效益」，右上是白板上画的杠杆，右下是 AI 助教总结这节课的对话。">
+      <span class="ov-area" data-area="slides" style="left:0;top:3.7%;width:54.6%;height:96.3%"></span>
+      <span class="ov-area" data-area="board" style="left:55.2%;top:3.7%;width:44.8%;height:57.5%"></span>
+      <span class="ov-area" data-area="tutor" style="left:55.2%;top:61.9%;width:44.8%;height:38.1%"></span>
+      <span class="ov-label" data-area="slides" tabindex="0" style="left:1.6%;top:66%">课件</span>
+      <span class="ov-label" data-area="board" tabindex="0" style="left:57.5%;top:24%">白板</span>
+      <span class="ov-label" data-area="tutor" tabindex="0" style="left:57.5%;top:67.5%">AI 助教</span>
+    </div>
+  </figure>
+</section>
+
+<!-- Six things in the learning space: an expandable list on the left, one player on the right.
+     功能区文案：六条的标题和一句话只写在这里。 -->
+<section class="features wrap" id="features" aria-label="学习区里的六样">
+  <div class="feat">
+    <ol class="feat-list">
+      <li data-clip="../assets/features/01-layout.mp4" data-poster="../assets/features/01-layout.webp">
+        <h3><button type="button" class="feat-toggle">素材和布局</button></h3>
+        <div class="feat-body"><div class="feat-inner"><p>课件、文章、讲稿，同一节课换着读；白板、笔记、助教按你习惯摆在一屏。</p><div class="feat-inline"></div></div></div>
+      </li>
+      <li data-clip="../assets/features/02-notes.mp4" data-poster="../assets/features/02-notes.webp">
+        <h3><button type="button" class="feat-toggle">笔记</button></h3>
+        <div class="feat-body"><div class="feat-inner"><p>荧光笔留在原文上，笔记钉在那一页，回来时还在原位。</p><div class="feat-inline"></div></div></div>
+      </li>
+      <li data-clip="../assets/features/03-ai.mp4" data-poster="../assets/features/03-ai.webp">
+        <h3><button type="button" class="feat-toggle">AI 助教</button></h3>
+        <div class="feat-body"><div class="feat-inner"><p>卡住了就在这一页问；要总结、要举例，不用换窗口。</p><div class="feat-inline"></div></div></div>
+      </li>
+      <li data-clip="../assets/features/04-whiteboard.mp4" data-poster="../assets/features/04-whiteboard.webp">
+        <h3><button type="button" class="feat-toggle">白板</button></h3>
+        <div class="feat-body"><div class="feat-inner"><p>想不通就画出来，草图和算式跟着这节课保存。</p><div class="feat-inline"></div></div></div>
+      </li>
+      <li data-clip="../assets/features/05-index.mp4" data-poster="../assets/features/05-index.webp">
+        <h3><button type="button" class="feat-toggle">综合索引</button></h3>
+        <div class="feat-body"><div class="feat-inner"><p>笔记、划线、对话一起搜，再在学习地图上看每节课留下了什么。</p><div class="feat-inline"></div></div></div>
+      </li>
+      <li data-clip="../assets/features/06-export.mp4" data-poster="../assets/features/06-export.webp">
+        <h3><button type="button" class="feat-toggle">导出</button></h3>
+        <div class="feat-body"><div class="feat-inner"><p>讲义、笔记、学习地图一起打包，文件在你自己的电脑上。</p><div class="feat-inline"></div></div></div>
+      </li>
+    </ol>
+    <div class="feat-stage">
+      <div class="frame feat-frame">
+        <video class="feat-video" muted playsinline preload="none" width="1440" height="900" aria-label="当前这一条的演示短片"></video>
+        <button type="button" class="feat-play" aria-label="播放演示" hidden><span aria-hidden="true"></span></button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Act three, review: the title at the bottom of the hill, then the four methods with the papers the
+     source code cites for them, and what an export pack holds. -->
+<section class="story-scene story-meadow act-scene" id="science" aria-labelledby="science-title">
+  <div class="story-picture"><img class="story-image" src="../assets/hill-airy.webp" alt="空旷的淡紫天空下，一座柔和的小山丘上坐着读书的手绘人物。" width="1672" height="941" loading="lazy" decoding="async"></div>
+  <div class="story-wash" aria-hidden="true"></div>
+  <div class="wrap story-layout">
+    <div class="story-copy">
+      <p class="act-eyebrow">第三幕 · 复习</p>
+      <h2 id="science-title">方法都是公开的。</h2>
+      <p class="story-description">什么时候复习、先学什么，不靠感觉。每一种方法都写明了出处。</p>
+    </div>
+  </div>
+</section>
+
+<section class="act-body wrap" aria-label="复习用到的方法和导出">
+  <!-- The papers the source code cites for review, as quiet MLA-style cards in a carousel (cites.js):
+       authors, "title", what Aster does with it, the year.
+       turns every few seconds, pauses on hover or focus, buttons and swipe; reduced motion: no autoplay. -->
+  <div class="cites" data-cites data-slide="论文" role="region" aria-roledescription="轮播" aria-label="复习方法依据的论文">
+  <ul class="cites-track">
+    <li class="cite-card">
+      <p class="cite-authors">Corbett &amp; Anderson</p>
+      <p class="cite-title" lang="en">Knowledge tracing: Modeling the acquisition of procedural knowledge</p>
+      <p class="cite-line">每次作答，都会更新你掌握每个概念的概率。</p>
+      <p class="cite-year">1995</p>
+    </li>
+    <li class="cite-card">
+      <p class="cite-authors">Roediger &amp; Karpicke</p>
+      <p class="cite-title" lang="en">Test-enhanced learning: Taking memory tests improves long-term retention</p>
+      <p class="cite-line">课里穿插随堂测验，用回想代替重读。</p>
+      <p class="cite-year">2006</p>
+    </li>
+    <li class="cite-card">
+      <p class="cite-authors">Black &amp; Wiliam</p>
+      <p class="cite-title" lang="en">Assessment and classroom learning</p>
+      <p class="cite-line">测验压力小、次数多，答完马上看到解析。</p>
+      <p class="cite-year">1998</p>
+    </li>
+    <li class="cite-card">
+      <p class="cite-authors">Ebbinghaus</p>
+      <p class="cite-title" lang="en">Memory: A contribution to experimental psychology</p>
+      <p class="cite-line">不复习就会忘，复习要赶在快忘之前。</p>
+      <p class="cite-year">1885</p>
+    </li>
+    <li class="cite-card">
+      <p class="cite-authors">Cepeda, Pashler, Vul, Wixted &amp; Rohrer</p>
+      <p class="cite-title" lang="en">Distributed practice in verbal recall tasks: A review and quantitative synthesis</p>
+      <p class="cite-line">复习间隔从 1 小时拉长到 14 天，按你的作答排进清单。</p>
+      <p class="cite-year">2006</p>
+    </li>
+    <li class="cite-card">
+      <p class="cite-authors">Anderson &amp; Krathwohl</p>
+      <p class="cite-title" lang="en">A taxonomy for learning, teaching, and assessing</p>
+      <p class="cite-line">题目针对理解、应用和分析，不只考记忆。</p>
+      <p class="cite-year">2001</p>
+    </li>
+  </ul>
+  <div class="cites-ctrl">
+    <button class="cites-btn cites-prev" type="button" aria-label="上一篇"><svg class="ic" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg></button>
+    <div class="cites-bar" aria-hidden="true"><span></span></div>
+    <button class="cites-btn cites-next" type="button" aria-label="下一篇"><svg class="ic" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button>
+  </div>
+  </div>
+  <p class="methods-note">论文和实现说明都写在源码里。</p>
+  <div class="export-block">
+    <div class="export-copy">
+      <p class="act-eyebrow">学完带走</p>
+      <h3>一次打包导出。</h3>
+      <ul>
+        <li>课程讲义（PDF）</li>
+        <li>学习笔记：划线、白板图、对话记录</li>
+        <li>学习地图</li>
+        <li>思维导图</li>
+        <li>参考文献</li>
+      </ul>
+      <p>文件都在你自己的电脑上。</p>
+    </div>
+    <div class="frame export-frame"><img src="../assets/features/06-export.webp" width="1440" height="900" loading="lazy" decoding="async" alt="Aster 的导出窗口：选择课时范围，勾选课程讲义、学习笔记、学习地图、思维导图和参考文献。"></div>
+  </div>
+</section>
+
+<!-- Why Aster: a bento of four slow natural things in one watercolour valley (a path, lifting mist,
+     the tide, tree rings) for four parts of learning a course (starting, seeing clearly, coming
+     back, adding up). Text sits straight on the pictures; under the text of 01 and 04 the picture
+     slowly goes out of focus; 03 is frosted glass over its picture. Every card links to its section.
+     Pictures: assets/bento/PROMPTS.md and build-bento.py.
+     文案：中文就写在下面的 HTML 里；英文在 i18n/en.json（英文页 en/ 由 i18n/build-en.py 生成）。 -->
+<!-- Act four, values: the bento, one value per card. -->
+<section class="bento-section wrap" id="values" aria-labelledby="values-title">
+  <div class="act-head"><p class="act-eyebrow">第四幕 · 价值</p><h2 id="values-title">我们在意的事。</h2></div>
+  <div class="bento">
+    <a class="b-card b-plan" href="#plan">
+      <img src="../assets/bento/bento-01-path-1200.webp" srcset="../assets/bento/bento-01-path-600.webp 600w, ../assets/bento/bento-01-path-1200.webp 1200w" sizes="(max-width: 760px) calc(100vw - 32px), 40vw" width="1200" height="1600" alt="" loading="lazy" decoding="async">
+      <span class="b-veil" aria-hidden="true"></span><span class="b-shine" aria-hidden="true"></span><span class="b-soften" aria-hidden="true"></span>
+      <span class="b-num">01/</span><span class="b-tag" data-copy="c1.tag">You decide</span>
+      <span class="b-foot"><span class="b-title" data-copy="c1.title">你来决定。</span><span class="b-text" data-copy="c1.text">学什么、按什么顺序，由你定。你点头才生成。</span></span>
+    </a>
+    <a class="b-card b-window" href="#start">
+      <img src="../assets/bento/bento-02-mist-1200.webp" srcset="../assets/bento/bento-02-mist-1200.webp 1200w, ../assets/bento/bento-02-mist-2400.webp 2400w" sizes="(max-width: 760px) calc(100vw - 32px), 56vw" width="2400" height="1000" alt="" loading="lazy" decoding="async">
+      <span class="b-veil" aria-hidden="true"></span><span class="b-shine" aria-hidden="true"></span><span class="b-soften" aria-hidden="true"></span>
+      <span class="b-num">02/</span><span class="b-tag" data-copy="c2.tag">Source available</span>
+      <span class="b-foot"><span class="b-title" data-copy="c2.title">源码公开。</span><span class="b-text" data-copy="c2.text">个人与学术免费。每个请求发往哪里，都能自己查。</span></span>
+    </a>
+    <a class="b-card b-method" href="#plan">
+      <img src="../assets/bento/bento-03-tide-1200.webp" srcset="../assets/bento/bento-03-tide-600.webp 600w, ../assets/bento/bento-03-tide-1200.webp 1200w" sizes="(max-width: 760px) calc(100vw - 32px), 28vw" width="1200" height="1000" alt="" loading="lazy" decoding="async">
+      <span class="b-veil" aria-hidden="true"></span><span class="b-shine" aria-hidden="true"></span><span class="b-soften" aria-hidden="true"></span>
+      <span class="b-num">03/</span><span class="b-tag" data-copy="c3.tag">Clear costs</span>
+      <span class="b-foot"><span class="b-title" data-copy="c3.title">花费透明。</span><span class="b-text" data-copy="c3.text">用你自己的订阅或 API Key，每一笔花费都记在本地。</span></span>
+    </a>
+    <a class="b-card b-local" href="#start" id="data">
+      <img src="../assets/bento/bento-04-rings-1200.webp" srcset="../assets/bento/bento-04-rings-600.webp 600w, ../assets/bento/bento-04-rings-1200.webp 1200w" sizes="(max-width: 760px) calc(100vw - 32px), 28vw" width="1200" height="1000" alt="" loading="lazy" decoding="async">
+      <span class="b-veil" aria-hidden="true"></span><span class="b-shine" aria-hidden="true"></span><span class="b-soften" aria-hidden="true"></span>
+      <span class="b-num">04/</span><span class="b-tag" data-copy="c4.tag">Local-first</span>
+      <span class="b-foot"><span class="b-title" data-copy="c4.big"><span class="b-big-n">1</span> 个文件</span><span class="b-text" data-copy="c4.text">所有记录都在你自己的电脑上。不需要账号，断网也能学。</span></span>
+    </a>
+  </div>
+</section>
+
+
+<!-- Closing: back to the main line, then the coming-soon note (no form, nothing collected). -->
+<section class="story-scene story-ending act-scene" id="start" aria-labelledby="tagline">
+  <div class="story-picture"><img class="story-image" src="../assets/city-airy.webp" alt="开阔明亮的天空下，小小的手绘人物在露台上阅读，城市化作远处模糊的蓝紫色轮廓。" width="1672" height="941" loading="lazy" decoding="async"></div>
+  <div class="story-wash" aria-hidden="true"></div>
+  <div class="wrap story-layout">
+    <div class="story-copy">
+      <p class="act-eyebrow">开始使用</p>
+      <!-- 主广告语只写在这一处（#tagline），调试页 story/ 也从这里读。 -->
+      <h2 id="tagline">一次只开一扇窗。</h2>
+      <p class="story-description">Aster 装在你自己的电脑上，不需要账号，断网也能学。</p>
+    </div>
+  </div>
+</section>
+
+<section class="act-body wrap get" aria-labelledby="soon-title">
+  <div class="get-card soon-card">
+    <p class="act-eyebrow"><span class="soon-dot" aria-hidden="true"></span>即将推出</p>
+    <h3 id="soon-title">测试版正在准备中。</h3>
+    <p>准备好了会在这里公布。这个页面没有表单，也不放统计脚本。</p>
+  </div>
+</section>
+<footer class="site-footer wrap"><a class="logo" href="#top" aria-label="Aster 回到顶部">Aster</a><div class="footer-text"><p>本地优先的互动学习平台 · 源码公开，个人与学术免费 · 测试版</p><p class="footer-note">场景图为插画，画中人物不是真实用户。</p></div><a href="#top">回到顶部 ↑</a></footer>
+
+<script src="../stories.js?v=20261116a"></script>
+<script src="../features.js?v=20261116a" defer></script>
+<script src="../cites.js?v=20261116a" defer></script>
+<script type="module" src="../story/story.js?v=20261116a"></script>
+</body>
+</html>

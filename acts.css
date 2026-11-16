@@ -1,0 +1,115 @@
+/* The home page in four acts (setup, learning, review, values) and a closing.
+   Act titles are centred. Over a painting (.act-scene: #plan, #science, #start) the title sits at the
+   bottom of the picture on a soft wash; without one (.act-head: #space, #values) it heads the section.
+   Below each title, .act-body holds what the act shows. */
+
+.act-eyebrow { margin: 0 0 18px; font-size: 12px; letter-spacing: 0.14em; color: #665b7e; }
+
+/* Titles over a painting, centred at the bottom. */
+.act-scene { align-items: end; }
+.act-scene .story-layout { padding-block: 120px clamp(56px, 9svh, 104px); }
+.act-scene .story-copy, .story-meadow.act-scene .story-copy { width: auto; max-width: 56rem; margin: 0 auto; padding: 0; text-align: center; }
+.act-scene .story-copy h2 { font-size: clamp(2.6rem, 1.2rem + 3.6vw, 5rem); line-height: 1.12; text-wrap: balance; }
+.act-scene .story-description { max-width: 34em; margin: 22px auto 0; font-size: 16px; line-height: 1.8; color: #4f4767; }
+.act-scene .story-wash, .story-meadow.act-scene .story-wash, .story-ending.act-scene .story-wash {
+  background: linear-gradient(0deg, rgba(242, 239, 248, 0.86) 0%, rgba(242, 239, 248, 0.55) 26%, rgba(242, 239, 248, 0) 52%); }
+/* The joined #plan is a full screen: the descent lands on it. */
+.as-story.as-joined + .story-joined.act-scene { align-items: end; }
+
+/* The hill's reader sits low on the left: keep this title narrow enough to clear her. */
+.story-meadow.act-scene .story-copy h2:lang(en) { max-width: 7em; margin-inline: auto; }
+
+/* Titles heading a section. */
+.act-head { max-width: 56rem; margin: 0 auto clamp(40px, 5vw, 64px); text-align: center; }
+.act-head h2 { margin: 0; font-family: var(--serif); font-weight: 300; font-size: clamp(2.6rem, 1.2rem + 3.6vw, 5rem); line-height: 1.12; letter-spacing: -0.03em; text-wrap: balance; }
+.act-lead { max-width: 34em; margin: 22px auto 0; font-size: 16px; line-height: 1.8; color: #534b69; text-wrap: pretty; }
+.learning-rhythm.space .act-head { margin-bottom: clamp(40px, 5vw, 64px); }
+.features { padding-top: 0; }
+
+.act-body { padding-top: clamp(48px, 6vw, 88px); padding-bottom: clamp(80px, 10vw, 140px); }
+
+/* Act three: citation cards in a carousel (cites.js). One card in front, the rest fanned out on an arc;
+   the edges of the row fade out. */
+.cites { position: relative; overflow: hidden; padding-top: 12px;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent); mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent); }
+.cites-track { position: relative; list-style: none; margin: 0; padding: 0; height: 420px; touch-action: pan-y; }
+.cite-card { position: absolute; top: 18px; left: 50%; width: min(440px, 82%); display: flex; flex-direction: column; gap: 10px; padding: 24px 26px 20px;
+  border-radius: 12px; border: 1px solid #e0daeb; background: #f6f4fa; box-shadow: 0 12px 32px rgba(70, 54, 107, 0.06);
+  transform-origin: 50% 140%; transition: transform 600ms var(--ease), opacity 450ms var(--ease); cursor: pointer; user-select: none; }
+.cite-card.is-front { cursor: default; background: #fbfaff; }
+/* MLA, loosely: authors, "Title.", then what Aster does with it and the year. All small. */
+.cite-authors { margin: 0; font-size: 12px; letter-spacing: 0.04em; color: var(--ink-muted); }
+.cite-title { margin: 0; font-family: var(--serif); font-weight: 400; font-size: 17px; line-height: 1.45; color: var(--ink); text-wrap: pretty; }
+.cite-title::before { content: '\201C'; }
+.cite-title::after { content: '.\201D'; }
+.cite-line { margin: 2px 0 0; font-size: 14px; line-height: 1.7; color: #5d5672; text-wrap: pretty; }
+.cite-year { margin: auto 0 0; padding-top: 6px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em; color: var(--ink-muted); }
+.cites-ctrl { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-top: 4px; padding-inline: max(4px, 6%); }
+.cites-btn { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; border: 1px solid #d2cbe0; background: transparent; color: var(--ink); cursor: pointer; transition: background-color 200ms var(--ease); }
+.cites-btn:hover { background: rgba(255, 253, 255, 0.7); }
+.cites-next { background: var(--action); border-color: transparent; color: var(--on-action); }
+.cites-next:hover { background: var(--action-deep); }
+.cites-bar { flex: 0 1 260px; height: 2px; background: #ddd6e8; overflow: hidden; }
+.cites-bar span { display: block; height: 100%; background: var(--ink); transform-origin: 0 50%; transform: scaleX(0); transition: transform 500ms var(--ease); }
+@media (prefers-reduced-motion: reduce) { .cite-card, .cites-bar span { transition: none; } }
+.methods-note { margin: 20px 0 0; text-align: center; font-size: 13px; color: var(--ink-muted); }
+
+/* Act three: what an export pack holds, beside the export window. */
+.export-block { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(32px, 5vw, 72px); align-items: center; margin-top: clamp(64px, 8vw, 112px); }
+.export-copy h3 { margin: 0; color: var(--ink); font-family: var(--serif); font-weight: 300; font-size: clamp(2rem, 1.2rem + 2vw, 3.2rem); line-height: 1.15; letter-spacing: -0.02em; }
+.export-copy ul { list-style: none; margin: 26px 0 0; padding: 0; border-top: 1px solid #ddd6e8; }
+.export-copy li { padding: 13px 0; border-bottom: 1px solid #ddd6e8; font-size: 15px; color: var(--ink); }
+.export-copy > p:last-child { margin: 18px 0 0; font-size: 13px; color: var(--ink-muted); }
+.export-frame { position: relative; overflow: hidden; border-radius: 12px; }
+.export-frame img { display: block; width: 100%; height: auto; }
+
+/* Act four: four values in a row. */
+.values-act { padding-top: clamp(96px, 12vw, 168px); padding-bottom: 0; }
+.values-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; list-style: none; margin: 0; padding: 0; border-top: 1px solid #d9d2e5; }
+.values-grid li { padding: 28px 28px 8px 0; }
+.values-grid li + li { padding-left: 28px; border-left: 1px solid #e4deee; }
+.values-grid h3 { margin: 0 0 12px; font-family: var(--serif); font-weight: 400; font-size: 22px; }
+.values-grid p { margin: 0; font-size: 14px; line-height: 1.8; color: #5d5672; text-wrap: pretty; }
+
+/* Closing: the coming-soon note, one quiet card. */
+.get { display: grid; grid-template-columns: minmax(0, 1fr); max-width: 760px; }
+.get-card { min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 14px; padding: 30px; border-radius: 12px; border: 1px solid #e1dbeb; background: rgba(255, 253, 255, 0.6); }
+.get-card .act-eyebrow { display: inline-flex; align-items: center; gap: 10px; margin: 0; }
+.soon-card { align-items: center; text-align: center; padding: 40px 32px; }
+.soon-card p:last-child { margin: 0; max-width: 32em; font-size: 15px; line-height: 1.8; color: #5d5672; }
+.get-card h3 { margin: 0 0 6px; font-family: var(--serif); font-weight: 300; font-size: clamp(1.7rem, 1.1rem + 1.2vw, 2.4rem); line-height: 1.2; }
+
+@media (max-width: 1100px) {
+  .values-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .values-grid li:nth-child(3) { padding-left: 0; border-left: 0; }
+  .values-grid li:nth-child(n + 3) { border-top: 1px solid #e4deee; }
+}
+@media (max-width: 760px) {
+  /* On phones the painting stays a full screen with the title at its foot, as on desktop. */
+  .act-scene:not(.story-joined) { display: grid; min-height: 86svh; align-items: end; }
+  /* The painting fills the top 70% and fades out, so its reader stays clear of the title below. */
+  .act-scene:not(.story-joined) .story-picture { position: absolute; inset: 0 0 30% 0; order: 0; z-index: -2; aspect-ratio: auto;
+    -webkit-mask-image: linear-gradient(180deg, #000 72%, transparent); mask-image: linear-gradient(180deg, #000 72%, transparent); }
+  .act-scene:not(.story-joined) .story-wash { display: none; }
+  .act-scene .story-wash { display: block; }
+  .story-joined.act-scene { align-items: end; }
+  .story-joined.act-scene .story-layout { padding-top: 0; }
+  .act-scene .story-layout { padding: 96px 22px 48px; }
+  .act-scene .story-copy h2, .act-head h2 { font-size: clamp(2.3rem, 9.6vw, 3.2rem); }
+  .act-scene .story-description, .act-lead { font-size: 15px; }
+  .act-scene .story-wash, .story-meadow.act-scene .story-wash, .story-ending.act-scene .story-wash {
+    background: linear-gradient(0deg, rgba(242, 239, 248, 0.92) 0%, rgba(242, 239, 248, 0.7) 32%, rgba(242, 239, 248, 0) 60%); }
+  .values-grid, .get { grid-template-columns: minmax(0, 1fr); }
+  .cite-card { padding: 20px 20px 18px; }
+  .cites { -webkit-mask-image: none; mask-image: none; }
+  .values-grid li, .values-grid li + li { padding: 22px 0 18px; border-left: 0; }
+  .values-grid li + li { border-top: 1px solid #e4deee; }
+  .export-block { grid-template-columns: 1fr; }
+  .get-card { padding: 24px 20px; }
+}
+
+/* Footer: the licence line and, under it, the note on the pictures. */
+.footer-text { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+.footer-text p { margin: 0; font-size: 12px; color: var(--ink-muted); }
+.footer-text .footer-note { font-size: 11px; opacity: 0.85; }
+@media (max-width: 760px) { .footer-text { flex: 1 1 65%; text-align: right; } }
